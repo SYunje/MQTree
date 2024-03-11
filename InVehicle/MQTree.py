@@ -8,6 +8,7 @@ import time
 import subprocess
 import shutil
 
+
 class BinaryHashTree:
     def __init__(self):
         self.root_hash = None
@@ -48,11 +49,11 @@ class BinaryHashTree:
         return self.root_hash
 
 
-
 # MQTT 클라이언트 콜백 함수 설정
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
+    print("Connected with result code " + str(rc))
     client.subscribe(subTopic)  # 토픽 구독
+
 
 message_count = 0
 
@@ -81,7 +82,7 @@ def compute_file_hash(file_path):
     return sha256_hash.hexdigest()
 
 
-#여기가 Main 부분임
+# 여기가 Main 부분임
 def on_message(client, userdata, msg):
     global message_count, root_hash  # root_hash를 전역 변수로 사용
     payload = json.loads(msg.payload)  # MQTT로부터 받은 메시지 json 페이로드
@@ -112,7 +113,6 @@ def on_message(client, userdata, msg):
 
                 time.sleep(1)
                 print(f"Firmware downloaded and saved to {firmwarePath}")
-
 
                 # 파일이 성공적으로 저장된 후에 해시 계산
                 downloaded_file_hash = compute_file_hash(firmwarePath)
@@ -154,8 +154,6 @@ def on_message(client, userdata, msg):
                     ##여기에 이제 아두이노 cli만 적용하면 된다.##
                     # 연결된 보드 리스트를 가져오는 명령 실행
 
-
-                    
                     # 아두이노 스케치 디렉토리 쪽으로 옮김
                     target_directory = './1.SecureOTA/'
                     target_path = os.path.join(target_directory, os.path.basename(firmwarePath))
@@ -163,22 +161,20 @@ def on_message(client, userdata, msg):
 
                     print(f"File moved to {target_path}")
 
-
                     # 연결된 보드 리스트 가져오기
                     result = subprocess.run(['arduino-cli', 'board', 'list'], stdout=subprocess.PIPE, text=True)
                     board_list_output = result.stdout
 
-                    # 보드 정보를 파싱하기 위한 정규 표현식
-                    pattern = re.compile(r'(\/dev\/tty[A-Za-z0-9]+)\s+(.*?)\s+\(.*?\)\s+\[(.*?)\]')
+                    # "Arduino"로 시작하는 보드 이름을 포함하는 행을 찾기 위한 정규 표현식
+                    pattern = re.compile(r'(\/dev\/tty[A-Za-z0-9]+)\s+(Arduino[^\s]+)\s+\(.*?\)\s+\[(arduino:[^\]]+)\]')
 
                     # 정규 표현식을 사용하여 포트, 보드 이름, FQBN 추출
                     matches = pattern.findall(board_list_output)
                     if not matches:
                         print("No Arduino board found.")
-                        exit(1)
-
-                    for port, board_name, fqbn in matches:
-                        print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
+                    else:
+                        for port, board_name, fqbn in matches:
+                            print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
 
                         # 스케치 파일 경로 설정
                         # setup_environment에서 이미 스캐치를 해서 디렉토리가 생김 이름만 동일하게
@@ -205,7 +201,6 @@ def on_message(client, userdata, msg):
         print("No new firmware update required.")
 
 
-
 # MQTT 클라이언트 인스턴스 생성 및 설정
 userId = "kusecar"
 userPw = "kusetest"
@@ -224,10 +219,8 @@ client.connect(brokerIp, port, 60)
 global moterVersion
 moterVersion = 0.7
 
-
 global lightVersion
 lightVersion = 0.7
 
 # 네트워크 루프 시작
 client.loop_forever()
-
