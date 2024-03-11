@@ -178,7 +178,7 @@ def on_message(client, userdata, msg):
                         print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
 
                         # 스케치 파일 경로 설정
-                        sketch_path = "./Firmware/1.SecureOTA.ino"
+                        sketch_path = "./1.SecureOTA.ino"
 
                         # 컴파일 명령 실행
                         compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
