@@ -6,7 +6,7 @@ import re
 import os
 import time
 import subprocess
-
+import shutil
 
 class BinaryHashTree:
     def __init__(self):
@@ -104,7 +104,7 @@ def on_message(client, userdata, msg):
                 response.raise_for_status()  # 오류 발생 시 예외 발생
 
                 # 다운로드된 내용을 파일에 저장
-                firmwareDirectory = './Firmware'
+                firmwareDirectory = './Firmware/'
                 firmwareFilename = get_next_firmware_filename(firmwareDirectory)
                 firmwarePath = os.path.join(firmwareDirectory, firmwareFilename)
                 with open(firmwarePath, 'wb') as file:
@@ -153,6 +153,14 @@ def on_message(client, userdata, msg):
                     print()
                     ##여기에 이제 아두이노 cli만 적용하면 된다.##
                     # 연결된 보드 리스트를 가져오는 명령 실행
+                    
+                    target_directory = './Firmware/1.SecureOTA/'
+                    target_path = os.path.join(target_directory, os.path.basename(firmwarePath))
+                    shutil.move(firmwarePath, target_path)
+
+                    print(f"File moved to {target_path}")
+
+
                     result = subprocess.run(['arduino-cli', 'board', 'list'], stdout=subprocess.PIPE, text=True)
                     board_list_output = result.stdout
 
@@ -173,7 +181,7 @@ def on_message(client, userdata, msg):
                     fqbn = "arduino:megaavr:uno2018"
 
                     # 업로드할 스케치 파일 경로
-                    sketch_path = "./Firmware/1. SecureOTA.ino"
+                    sketch_path = "./Firmware/1.SecureOTA.ino"
 
                     # 컴파일 명령 실행
                     compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
@@ -197,7 +205,20 @@ def on_message(client, userdata, msg):
 
 
 
+# MQTT 클라이언트 인스턴스 생성 및 설정
+userId = "kusecar"
+userPw = "kusetest"
 
+client = mqtt.Client()
+client.username_pw_set(userId, userPw)
+client.on_connect = on_connect
+client.on_message = on_message
+
+# MQTT 브로커에 연결
+subTopic = "/MoSE/mqtt"
+brokerIp = 'kuse.kookmin.ac.kr'
+port = 3000
+client.connect(brokerIp, port, 60)
 
 global moterVersion
 moterVersion = 0.7
