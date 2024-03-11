@@ -154,7 +154,10 @@ def on_message(client, userdata, msg):
                     ##여기에 이제 아두이노 cli만 적용하면 된다.##
                     # 연결된 보드 리스트를 가져오는 명령 실행
 
-                    target_directory = '/1.SecureOTA/'
+
+                    
+                    # 아두이노 스케치 디렉토리 쪽으로 옮김
+                    target_directory = './1.SecureOTA/'
                     target_path = os.path.join(target_directory, os.path.basename(firmwarePath))
                     shutil.move(firmwarePath, target_path)
 
