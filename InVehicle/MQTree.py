@@ -70,7 +70,7 @@ def get_next_firmware_filename(directory):
             if number > max_number:
                 max_number = number
     # 다음 파일 번호를 반환합니다.
-    return f"{max_number + 1}. SecureOTA.ino"
+    return f"{max_number + 1}.SecureOTA.ino"
 
 
 def compute_file_hash(file_path):
@@ -153,8 +153,8 @@ def on_message(client, userdata, msg):
                     print()
                     ##여기에 이제 아두이노 cli만 적용하면 된다.##
                     # 연결된 보드 리스트를 가져오는 명령 실행
-                    
-                    target_directory = './Firmware/1.SecureOTA/'
+
+                    target_directory = '/1.SecureOTA/'
                     target_path = os.path.join(target_directory, os.path.basename(firmwarePath))
                     shutil.move(firmwarePath, target_path)
 
