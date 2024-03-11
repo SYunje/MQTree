@@ -18,4 +18,12 @@ else
     echo "Arduino CLI is already installed."
 fi
 
+# Check if 1.SecureOTA sketch directory already exists
+if [ ! -d "1.SecureOTA" ]; then
+    echo "Creating new sketch '1.SecureOTA'..."
+    arduino-cli sketch new 1.SecureOTA
+else
+    echo "Sketch '1.SecureOTA' already exists."
+fi
+
 echo "Setup completed successfully."
