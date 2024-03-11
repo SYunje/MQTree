@@ -169,27 +169,34 @@ def on_message(client, userdata, msg):
                     pattern = re.compile(r'(^\/dev\/tty[A-Za-z0-9]+)\s+[\w]+\s+[\w]+\s+(Arduino[^\s]+)\s+([\w:]+)')
 
                     # 정규 표현식을 사용하여 포트, 보드 이름, FQBN 추출
-                    matches = pattern.findall(board_list_output)
-                    if not matches:
-                        print("No Arduino board found.")
-                    else:
-                        for match in matches:
-                            port, board_name, fqbn = match
-                            if board_name.startswith("Arduino"):
-                                print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
-                                # 여기서 필요한 작업을 수행하세요. 예를 들어, 변수에 저장:
+                    # 연결된 보드 리스트 가져오기
+                    result = subprocess.run(['arduino-cli', 'board', 'list'], stdout=subprocess.PIPE, text=True)
+                    board_list_output = result.stdout
 
-                                # 스케치 파일 경로 설정
-                                # setup_environment에서 이미 스캐치를 해서 디렉토리가 생김 이름만 동일하게
-                                sketch_path = "1.SecureOTA"
-        
-                                # 컴파일 명령 실행
-                                compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
-                                subprocess.run(compile_command)
-        
-                                # 업로드 명령 실행
-                                upload_command = ['arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
-                                subprocess.run(upload_command)
+                    # 첫 번째 보드의 포트와 FQBN을 추출하기 위한 정규 표현식
+                    pattern = re.compile(r'(\/dev\/tty[A-Za-z0-9]+)\s+serial\s+.*?\s+([^\s]+)\s+arduino:avr')
+
+                    # 정규 표현식을 사용하여 출력된 결과에서 첫 번째 일치하는 포트와 FQBN 찾기
+                    match = pattern.search(board_list_output)
+                    if match:
+                        port = match.group(1)
+                        fqbn = match.group(2)
+                        print(f"Found Arduino board at port: {port} with FQBN: {fqbn}")
+                    else:
+                        print("No Arduino board found.")
+                        exit(1)
+
+                     
+                    # setup_environment에서 이미 스캐치를 해서 디렉토리가 생김 이름만 동일하게
+                    sketch_path = "1.SecureOTA"
+
+                    # 컴파일 명령 실행
+                    compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
+                    subprocess.run(compile_command)
+
+                    # 업로드 명령 실행
+                    upload_command = ['arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
+                    subprocess.run(upload_command)
 
 
                 else:
