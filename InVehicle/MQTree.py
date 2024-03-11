@@ -165,28 +165,20 @@ def on_message(client, userdata, msg):
                     result = subprocess.run(['arduino-cli', 'board', 'list'], stdout=subprocess.PIPE, text=True)
                     board_list_output = result.stdout
 
-                    # "Arduino"로 시작하는 보드 이름을 포함하는 행의 Port와 FQBN을 찾기 위한 정규 표현식
-                    pattern = re.compile(r'(^\/dev\/tty[A-Za-z0-9]+)\s+[\w]+\s+[\w]+\s+(Arduino[^\s]+)\s+([\w:]+)')
+                    # 첫 번째 보드의 포트와 FQBN을 정확히 추출하기 위한 정규 표현식
+                    pattern = re.compile(
+                        r'(\/dev\/ttyACM0)\s+serial\s+.*Arduino Mega or Mega 2560\s+(arduino:avr:mega)\s+arduino:avr')
 
-                    # 정규 표현식을 사용하여 포트, 보드 이름, FQBN 추출
-                    # 연결된 보드 리스트 가져오기
-                    result = subprocess.run(['arduino-cli', 'board', 'list'], stdout=subprocess.PIPE, text=True)
-                    board_list_output = result.stdout
-
-                    # 첫 번째 보드의 포트와 FQBN을 추출하기 위한 정규 표현식
-                    pattern = re.compile(r'(\/dev\/tty[A-Za-z0-9]+)\s+serial\s+.*?\s+([^\s]+)\s+arduino:avr')
-
-                    # 정규 표현식을 사용하여 출력된 결과에서 첫 번째 일치하는 포트와 FQBN 찾기
+                    # 정규 표현식을 사용하여 출력된 결과에서 원하는 포트와 FQBN 찾기
                     match = pattern.search(board_list_output)
                     if match:
-                        port = match.group(1)
-                        fqbn = match.group(2)
+                        port = match.group(1)  # '/dev/ttyACM0' 추출
+                        fqbn = match.group(2)  # 'arduino:avr:mega' 추출
                         print(f"Found Arduino board at port: {port} with FQBN: {fqbn}")
                     else:
-                        print("No Arduino board found.")
+                        print("No matching Arduino board found.")
                         exit(1)
 
-                     
                     # setup_environment에서 이미 스캐치를 해서 디렉토리가 생김 이름만 동일하게
                     sketch_path = "1.SecureOTA"
 
