@@ -72,5 +72,5 @@ sed -i 's/\r$//' setup_environment.sh
 
 ### Start
 ```bash
-python3 yourscriptname.py
+python3 MQTree.py
 ```
