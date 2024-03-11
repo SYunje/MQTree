@@ -161,35 +161,32 @@ def on_message(client, userdata, msg):
                     print(f"File moved to {target_path}")
 
 
+                    # 연결된 보드 리스트 가져오기
                     result = subprocess.run(['arduino-cli', 'board', 'list'], stdout=subprocess.PIPE, text=True)
                     board_list_output = result.stdout
 
-                    # "Arduino"로 시작하는 보드 이름을 가진 포트를 찾기 위한 정규 표현식
-                    pattern = re.compile(r'(\/dev\/tty[A-Za-z0-9]+)\s+.*Arduino.*')
+                    # 보드 정보를 파싱하기 위한 정규 표현식
+                    pattern = re.compile(r'(\/dev\/tty[A-Za-z0-9]+)\s+(.*?)\s+\(.*?\)\s+\[(.*?)\]')
 
-                    # 정규 표현식을 사용하여 출력된 결과에서 원하는 포트 찾기
+                    # 정규 표현식을 사용하여 포트, 보드 이름, FQBN 추출
                     matches = pattern.findall(board_list_output)
-                    if matches:
-                        # 첫 번째 일치하는 포트 사용
-                        port = matches[0]
-                        print(f"Found Arduino board at port: {port}")
-                    else:
+                    if not matches:
                         print("No Arduino board found.")
-                        exit(1)  # Arduino 보드를 찾지 못한 경우 스크립트 종료
+                        exit(1)
 
-                    # FQBN 설정: Arduino Uno WiFi Rev2의 경우
-                    fqbn = "arduino:megaavr:uno2018"
+                    for port, board_name, fqbn in matches:
+                        print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
 
-                    # 업로드할 스케치 파일 경로
-                    sketch_path = "./Firmware/1.SecureOTA.ino"
+                        # 스케치 파일 경로 설정
+                        sketch_path = "./Firmware/1.SecureOTA.ino"
 
-                    # 컴파일 명령 실행
-                    compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
-                    subprocess.run(compile_command)
+                        # 컴파일 명령 실행
+                        compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
+                        subprocess.run(compile_command)
 
-                    # 업로드 명령 실행
-                    upload_command = ['arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
-                    subprocess.run(upload_command)
+                        # 업로드 명령 실행
+                        upload_command = ['arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
+                        subprocess.run(upload_command)
 
 
                 else:
