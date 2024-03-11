@@ -178,7 +178,8 @@ def on_message(client, userdata, msg):
                         print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
 
                         # 스케치 파일 경로 설정
-                        sketch_path = "./1.SecureOTA.ino"
+                        # setup_environment에서 이미 스캐치를 해서 디렉토리가 생김 이름만 동일하게
+                        sketch_path = "1.SecureOTA"
 
                         # 컴파일 명령 실행
                         compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
