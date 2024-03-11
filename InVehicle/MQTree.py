@@ -165,28 +165,31 @@ def on_message(client, userdata, msg):
                     result = subprocess.run(['arduino-cli', 'board', 'list'], stdout=subprocess.PIPE, text=True)
                     board_list_output = result.stdout
 
-                    # "Arduino"로 시작하는 보드 이름을 포함하는 행을 찾기 위한 정규 표현식
-                    pattern = re.compile(r'(\/dev\/tty[A-Za-z0-9]+)\s+(Arduino[^\s]+)\s+\(.*?\)\s+\[(arduino:[^\]]+)\]')
+                    # "Arduino"로 시작하는 보드 이름을 포함하는 행의 Port와 FQBN을 찾기 위한 정규 표현식
+                    pattern = re.compile(r'(^\/dev\/tty[A-Za-z0-9]+)\s+[\w]+\s+[\w]+\s+(Arduino[^\s]+)\s+([\w:]+)')
 
                     # 정규 표현식을 사용하여 포트, 보드 이름, FQBN 추출
                     matches = pattern.findall(board_list_output)
                     if not matches:
                         print("No Arduino board found.")
                     else:
-                        for port, board_name, fqbn in matches:
-                            print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
+                        for match in matches:
+                            port, board_name, fqbn = match
+                            if board_name.startswith("Arduino"):
+                                print(f"Found {board_name} at port: {port} with FQBN: {fqbn}")
+                                # 여기서 필요한 작업을 수행하세요. 예를 들어, 변수에 저장:
 
-                        # 스케치 파일 경로 설정
-                        # setup_environment에서 이미 스캐치를 해서 디렉토리가 생김 이름만 동일하게
-                        sketch_path = "1.SecureOTA"
-
-                        # 컴파일 명령 실행
-                        compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
-                        subprocess.run(compile_command)
-
-                        # 업로드 명령 실행
-                        upload_command = ['arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
-                        subprocess.run(upload_command)
+                                # 스케치 파일 경로 설정
+                                # setup_environment에서 이미 스캐치를 해서 디렉토리가 생김 이름만 동일하게
+                                sketch_path = "1.SecureOTA"
+        
+                                # 컴파일 명령 실행
+                                compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
+                                subprocess.run(compile_command)
+        
+                                # 업로드 명령 실행
+                                upload_command = ['arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
+                                subprocess.run(upload_command)
 
 
                 else:
