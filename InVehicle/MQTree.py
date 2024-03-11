@@ -183,11 +183,11 @@ def on_message(client, userdata, msg):
                     sketch_path = "1.SecureOTA"
 
                     # 컴파일 명령 실행
-                    compile_command = ['arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
+                    compile_command = ['sudo', 'arduino-cli', 'compile', '--fqbn', fqbn, sketch_path]
                     subprocess.run(compile_command)
 
                     # 업로드 명령 실행
-                    upload_command = ['arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
+                    upload_command = ['sudo', 'arduino-cli', 'upload', '-p', port, '--fqbn', fqbn, sketch_path]
                     subprocess.run(upload_command)
 
 
