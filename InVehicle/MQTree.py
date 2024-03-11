@@ -204,8 +204,8 @@ def on_message(client, userdata, msg):
 
 
 # MQTT 클라이언트 인스턴스 생성 및 설정
-userId = "kusecar"
-userPw = "kusetest"
+userId = YOUR_ID
+userPw = YOUR_PW
 
 client = mqtt.Client()
 client.username_pw_set(userId, userPw)
@@ -213,9 +213,9 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # MQTT 브로커에 연결
-subTopic = "/MoSE/mqtt"
-brokerIp = 'kuse.kookmin.ac.kr'
-port = 3000
+subTopic = YOUR_Topic
+brokerIp = YOUR_IP
+port = YOUR_PORT
 client.connect(brokerIp, port, 60)
 
 global moterVersion
