@@ -55,8 +55,8 @@ arduino-cli core list
 
 **Clone your project repository and navigate to the relevant directory:**
 ```bash
-git clone https://github.com/yourusername/yourprojectname.git
-cd ./yourprojectname/InVehicle
+git clone https://github.com/SYunje/MQTree.git
+cd ./MQTree/InVehicle
 ```
 
 **Give execution permissions to your environment setup script and run it:**
