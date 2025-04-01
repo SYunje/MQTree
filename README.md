@@ -74,3 +74,9 @@ sed -i 's/\r$//' setup_environment.sh
 ```bash
 python3 MQTree.py
 ```
+## License
+
+This project is licensed under the MIT License with Commons Clause – No Commercial Educational Use.  
+You are free to use, modify, and distribute this software **non-commercially**.  
+**Commercial and monetized educational use is strictly prohibited.**  
+Please contact the author for commercial licensing.
